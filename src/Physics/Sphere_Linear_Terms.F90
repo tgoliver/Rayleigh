@@ -567,8 +567,8 @@ Contains
 
                 Call Load_BC(lp,r,zeq,zvar,one,0)
                 Call Load_BC(lp,r,peq,wvar,one,1)
-            Else
-                ! Else stress-free
+            Else !If (stress_free_top) Then
+                 Else stress-free
                 r = 1
                 samp = -(2.0d0/radius(r)+ref%dlnrho(r))
                 Call Load_BC(lp,r,peq,wvar,one,2)
@@ -577,6 +577,10 @@ Contains
 
                 Call Load_BC(lp,r,zeq,zvar,one,1)
                 Call Load_BC(lp,r,zeq,zvar,samp,0)
+            Else
+                r = 1
+                Call Load_BC(lp,r,zeq,zvar,one,0)    !upper boundary
+                Call Load_BC(lp,r,peq,wvar,one,1)
             Endif
 
             If (no_slip_bottom) Then

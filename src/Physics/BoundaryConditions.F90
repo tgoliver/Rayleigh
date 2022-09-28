@@ -46,7 +46,7 @@ Module BoundaryConditions
     Logical :: Impose_Dipole_Field = .False.
     Logical :: Dipole_Field_Bottom = .False.
     Logical :: adjust_dTdr_Top = .True.
-    Logical :: impenetrable_topo    = .False.
+    Logical :: impenetrable_topo = .False.
 
     Real*8  :: T_Bottom     = 1.0d0
     Real*8  :: T_Top        = 0.0d0
@@ -60,7 +60,6 @@ Module BoundaryConditions
     Real*8  :: C1m1_top = 0.0d0
     Real*8  :: Br_bottom = 0.0d0
     Real*8  :: Dipole_Tilt_Degrees = 0.0d0
-    Real*8  :: Vr_Top        = 0.0d0
     Real*8  :: Z10_Top        = 1.0d0
 
 
@@ -83,7 +82,7 @@ Module BoundaryConditions
 
     Namelist /Boundary_Conditions_Namelist/ Fix_Tvar_Top, Fix_Tvar_Bottom, T_Bottom, T_Top, dTdr_top, dTdr_bottom, &
         fix_dtdr_bottom, fix_dtdr_top, fix_divrt_top, fix_divt_top, fix_divrfc_top, fix_divfc_top, &
-        no_slip_boundaries, impenetrable_topo,Z10_Top,strict_L_Conservation, fix_poloidalfield_top, fix_poloidalfield_bottom, &
+        no_slip_boundaries, impenetrable_topo, Z10_Top, strict_L_Conservation, fix_poloidalfield_top, fix_poloidalfield_bottom, &
         C10_bottom, C10_top, C11_bottom, C11_top, C1m1_bottom, C1m1_top, Br_bottom, &
         dipole_tilt_degrees, impose_dipole_field, no_slip_top, no_slip_bottom, &
         stress_free_top, stress_free_bottom, T_top_file, T_bottom_file, dTdr_top_file, dTdr_bottom_file, &
@@ -135,7 +134,7 @@ Contains
             no_slip_top = .false.
             no_slip_bottom = .false.
             stress_free_top    =  no_slip_top
-            stress_free_bottom =  no_slip_bottom
+            stress_free_bottom =  .not. no_slip_bottom
         Endif
 
 
@@ -283,8 +282,8 @@ Contains
         
             If (impenetrable_topo) Then
                 if (trim(H_top_file) .eq. '__nothing__') then
-                  !bc_val= Vr_Top!*sqrt(four_pi)
                   Call Set_BC(Z10_Top,1,0, zeq,real_ind, uind)
+ 
                 else  
                   Call Set_BC_from_file(H_top_file, zeq, uind)
                 end if
@@ -402,7 +401,6 @@ Contains
         C1m1_top = 0.0d0
         Br_bottom = 0.0d0
         Dipole_Tilt_Degrees = 0.0d0
-        Vr_Top        = 0.0d0
         Z10_Top        = 1.0d0
 
         T_top_file       = '__nothing__'
