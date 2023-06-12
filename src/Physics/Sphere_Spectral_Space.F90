@@ -287,6 +287,7 @@ Contains
             Call Finalize_EMF()
         endif
         Call Add_to_All_RHS(wsp%p1b,new_ab_factor)
+        Call Dynamic_Boundary_Conditions() 
         Call Enforce_Boundary_Conditions()
         Call StopWatch(solve_time)%startclock()
         Call Implicit_Solve()
@@ -295,6 +296,16 @@ Contains
         ! The righthand side of the equation set structure
         ! Now contains the updated fields.
     End Subroutine AdvanceTime
+    Subroutine Dynamic_Boundary_Conditions()
+        If(set_topography_top) Then
+                ! 1 is top, 2 is bottom
+                bc_values(1,:,:,tvar)= wsp%p1b(1,:,:,tvar)
+        Endif
+        If(set_topography_bottom) Then
+                ! 1 is top, 2 is bottom
+                bc_values(2,:,:,tvar)= wsp%p1b(n_r,:,:,tvar)
+        Endif
+    End Subroutine Dynamic_Boundary_Conditions
     Subroutine Finalize_EMF()
         Implicit None
         Integer m, i

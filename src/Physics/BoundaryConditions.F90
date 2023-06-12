@@ -38,6 +38,10 @@ Module BoundaryConditions
     Logical :: Fix_dTdr_Top    = .False.
     Logical :: Fix_dTdr_Bottom = .False.
 
+    Logical :: Set_Topography_Top = .False.
+    Logical :: Set_Topography_Bottom = .False.
+    Real*8, Allocatable :: H_Boundary_Top(:,:)
+    Real*8, Allocatable :: H_Boundary_Bottom(:,:)
     Logical :: Fix_chivar_a_Top(1:n_scalar_max)    = .True.
     Logical :: Fix_chivar_a_Bottom(1:n_scalar_max) = .True.
     Logical :: Fix_dchidr_a_Top(1:n_scalar_max)    = .False.
@@ -120,7 +124,8 @@ Module BoundaryConditions
         fix_dchidr_a_bottom, fix_dchidr_a_top, dchidr_a_top, dchidr_a_bottom, &
         chi_p_top_file, chi_p_bottom_file, dchidr_p_top_file, dchidr_p_bottom_file, &
         fix_chivar_p_top, fix_chivar_p_bottom, chi_p_bottom, chi_p_top, &
-        fix_dchidr_p_bottom, fix_dchidr_p_top, dchidr_p_top, dchidr_p_bottom
+        fix_dchidr_p_bottom, fix_dchidr_p_top, dchidr_p_top, dchidr_p_bottom, &
+        set_topography_top, set_topography_bottom
 
 Contains
 
@@ -246,7 +251,7 @@ Contains
 
     Subroutine Generate_Boundary_Mask()
         Implicit None
-        Integer :: i
+        Integer :: i,t,k
         Integer :: uind, lind
         Integer :: real_ind, imag_ind
         Real*8 :: bc_val
@@ -411,6 +416,26 @@ Contains
 
         Endif
         Call Store_BC_Mask(bc_values)  ! to checkpointing
+        If (set_topography_top) Then
+                Allocate(H_Boundary_Top(1:n_phi,my_theta%min:my_theta%max))
+                !Define H_Boundary here
+                !Write function for H in a loop over k and t
+                Do t = my_theta%min,my_theta%max
+                    Do k = 1,n_phi
+                        H_Boundary_Top(k,t) = 0.0!F(\phi,\theta)
+                    Enddo
+                Enddo
+        Endif
+        If (set_topography_bottom) Then
+                Allocate(H_Boundary_Bottom(1:n_phi,my_theta%min:my_theta%max))
+                !Define H_Boundary here
+                !Write function for H in a loop over k and t
+               ! Do t = my_theta%min,my_theta%max
+               !     Do k = 1,n_phi
+               !         H_Boundary(k,t) = F(\phi,\theta)
+               !     Enddo
+               ! Enddo
+        Endif
     End Subroutine Generate_Boundary_Mask
 
     Subroutine Set_BC(inval,ellval,emval,eqval,imi,bound_ind)

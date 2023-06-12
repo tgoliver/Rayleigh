@@ -35,6 +35,7 @@ Module Sphere_Physical_Space
     Use PDE_Coefficients
     Use Math_Constants
     Use Benchmarking, Only : benchmark_checkup
+    Use BoundaryConditions, Only : set_topography_top, set_topography_bottom, H_Boundary_Top, H_Boundary_Bottom
     Implicit None
 
 Contains
@@ -144,6 +145,13 @@ Contains
             Call Compute_Ohmic_Heating()
             Call Compute_EMF()
         Endif
+        !If Statement here
+        If (set_topography_top )  Then
+            Call Impose_Topography_Top()
+        Endif
+        If (set_topography_bottom) Then
+            Call Impose_Topography_Bottom()
+        Endif
 
         Call StopWatch(nl_time)%increment()
         !...........................
@@ -225,6 +233,35 @@ Contains
         !$OMP END PARALLEL DO
 
     End Subroutine Temperature_Advection
+    
+    Subroutine Impose_Topography_Top()
+        Integer :: t,r,k
+        If (my_r%min .eq. 1) Then
+                r = 1
+        !$OMP PARALLEL DO PRIVATE(t,r,k)
+            Do t = my_theta%min, my_theta%max
+                Do k =1, n_phi
+                wsp%p3b(k,r,t,tvar) = -H_Boundary_Top(k,t)*wsp%p3a(k,r,t,dtdr)
+                Enddo
+            Enddo
+        !$OMP END PARALLEL DO
+        Endif
+    End Subroutine Impose_Topography_Top
+
+    Subroutine Impose_Topography_Bottom()
+        Integer :: t,r,k
+        If (my_r%max .eq. n_r) Then
+                r = n_r
+        !$OMP PARALLEL DO PRIVATE(t,r,k)
+            Do t = my_theta%min, my_theta%max
+                Do k =1, n_phi
+                wsp%p3b(k,r,t,tvar) = -H_Boundary_Bottom(k,t)*wsp%p3a(k,r,t,dtdr)
+                Enddo
+            Enddo
+        !$OMP END PARALLEL DO
+        Endif
+
+    End Subroutine Impose_Topography_Bottom
 
     Subroutine Volumetric_Heating()
         Implicit None
