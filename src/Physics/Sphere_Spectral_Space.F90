@@ -300,6 +300,9 @@ Contains
         If(set_topography_top) Then
                 ! 1 is top, 2 is bottom
                 bc_values(1,:,:,tvar)= wsp%p1b(1,:,:,tvar)
+                bc_values(1,:,:,wvar)= wsp%p1b(1,:,:,wvar)
+                bc_values(1,:,:,pvar)= wsp%p1b(1,:,:,pvar)
+                bc_values(1,:,:,zvar)= wsp%p1b(1,:,:,zvar)
         Endif
         If(set_topography_bottom) Then
                 ! 1 is top, 2 is bottom

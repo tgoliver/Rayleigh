@@ -486,7 +486,22 @@ Contains
             !$OMP END PARALLEL DO
         Endif
 
-
+        !!!!!!!!!!!!!
+        If (Set_Topography_Top) Then
+            ! We want vr(rtop) = -h(phi,theta)*dvdr
+            ! We build  -r^2*rho*h(phi,theta)*dvdr
+            ! IDX is shorthand for k,r,t
+            If (my_r%min .eq. 1) Then
+                r = 1
+                Do t = my_theta%min, my_theta%max
+                    Do k = 1, n_phi
+                        ! Could also say RHSP(IDX,wvar)
+                        RHSP(k,r,t,wvar) = -r_squared(r)*ref%density(r)*h_boundary_top(k,t)*FIELDSP(IDX,dvrdr)
+                    Enddo
+                Enddo
+            Endif
+        Endif
+        !!!!!!!!!!!!
 
     End Subroutine Momentum_Advection_Radial
 
@@ -612,7 +627,22 @@ Contains
         END_DO
         !$OMP END PARALLEL DO
 
-
+        !!!!!!!!!!!!!
+        If (Set_Topography_Top) Then
+            ! We want vtheta(rtop) = -h(phi,theta)*dvthetadr
+            ! We build  r/sintheta*rho*h(phi,theta)*dvthetadr
+            ! IDX is shorthand for k,r,t
+            If (my_r%min .eq. 1) Then
+                r = 1
+                Do t = my_theta%min, my_theta%max
+                    Do k = 1, n_phi
+                        ! Could also say RHSP(IDX,wvar)
+                        RHSP(k,r,t,pvar) = radius(r)*csctheta(t)*ref%density(r)*h_boundary_top(k,t)*FIELDSP(IDX,dvtdr)
+                    Enddo
+                Enddo
+            Endif
+        Endif
+        !!!!!!!!!!!!
 
     End Subroutine Momentum_Advection_Theta
     Subroutine Momentum_Advection_Phi()
@@ -678,6 +708,24 @@ Contains
             RHSP(IDX,zvar) = RHSP(IDX,zvar)*radius(r)*csctheta(t)
         END_DO
         !OMP END PARALLEL DO
+        
+                !!!!!!!!!!!!!
+        If (Set_Topography_Top) Then
+            ! We want vphi(rtop) = -h(phi,theta)*dvphidr
+            ! We build  r/sintheta*rho*h(phi,theta)*dvphidr
+            ! IDX is shorthand for k,r,t
+            If (my_r%min .eq. 1) Then
+                r = 1
+                Do t = my_theta%min, my_theta%max
+                    Do k = 1, n_phi
+                        ! Could also say RHSP(IDX,wvar)
+                        RHSP(k,r,t,zvar) = radius(r)*csctheta(t)*ref%density(r)*h_boundary_top(k,t)*FIELDSP(IDX,dvpdr)
+                    Enddo
+                Enddo
+            Endif
+        Endif
+        !!!!!!!!!!!!
+        
     End Subroutine Momentum_Advection_Phi
     Subroutine Phi_Derivatives()
         Implicit None
