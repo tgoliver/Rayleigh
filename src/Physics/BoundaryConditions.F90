@@ -423,7 +423,7 @@ Contains
                 !Write function for H in a loop over k and t
                 Do t = my_theta%min,my_theta%max
                     Do k = 1,n_phi
-                        H_Boundary_Top(k,t) = 0.01*(3*cos2theta(t)-1)/2!F(\phi,\theta)
+                        H_Boundary_Top(k,t) = 0.01!*(3*cos2theta(t)-1)/2!F(\phi,\theta)
                     Enddo
                 Enddo
         Endif
