@@ -242,9 +242,6 @@ Contains
             Do t = my_theta%min, my_theta%max
                 Do k =1, n_phi
                 wsp%p3b(k,r,t,tvar) = -H_Boundary_Top(k,t)*wsp%p3a(k,r,t,dtdr)
-                wsp%p3b(k,r,t,vr) = -H_Boundary_Top(k,t)*wsp%p3a(k,r,t,dvrdr)
-               ! wsp%p3b(k,r,t,vphi) = -H_Boundary_Top(k,t)*wsp%p3a(k,r,t,dvpdr)
-               ! wsp%p3b(k,r,t,vtheta) = -H_Boundary_Top(k,t)*wsp%p3a(k,r,t,dvtdr)
                 Enddo
             Enddo
           !  print *, dsin(simulation_time*two_pi)
