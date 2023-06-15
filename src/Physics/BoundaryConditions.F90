@@ -111,7 +111,7 @@ Module BoundaryConditions
     Logical :: no_slip_top = .false., no_slip_bottom = .false.
     Logical :: use_checkpoint_bc_file = .false.
 
-    Real*8, allocatable, dimension(:,:,:,:) :: bc_values  ! a 4-D array: (top/bottom, real/imag, my_num_lm, n_equations)
+    Real*8, allocatable, dimension(:,:,:,:) :: bc_values, bc_values_AB ! a 4-D array: (top/bottom, real/imag, my_num_lm, n_equations)
 
     Namelist /Boundary_Conditions_Namelist/ Fix_Tvar_Top, Fix_Tvar_Bottom, T_Bottom, T_Top, dTdr_top, dTdr_bottom, &
         fix_dtdr_bottom, fix_dtdr_top, fix_divrt_top, fix_divt_top, fix_divrfc_top, fix_divfc_top, &
@@ -259,7 +259,9 @@ Contains
 
 
         allocate(bc_values(2, 2, my_num_lm, n_equations))
+        allocate(bc_values_AB(2, 2, my_num_lm, n_equations))
         bc_values = zero
+        bc_values_AB = zero
 
         uind = 1   ! Upper boundary in BC array
         lind = 2   ! Lower boundary in BC array
@@ -423,7 +425,7 @@ Contains
                 !Write function for H in a loop over k and t
                 Do t = my_theta%min,my_theta%max
                     Do k = 1,n_phi
-                        H_Boundary_Top(k,t) = 0.01!*(3*cos2theta(t)-1)/2!F(\phi,\theta)
+                        H_Boundary_Top(k,t) = 0.005!*sinphi(k)!(3*cos2theta(t)-1)/2 !F(\phi,\theta)
                     Enddo
                 Enddo
         Endif

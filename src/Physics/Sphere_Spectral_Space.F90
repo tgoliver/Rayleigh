@@ -299,10 +299,14 @@ Contains
     Subroutine Dynamic_Boundary_Conditions()
         If(set_topography_top) Then
                 ! 1 is top, 2 is bottom
-                bc_values(1,:,:,tvar)= wsp%p1b(1,:,:,tvar)
-                bc_values(1,:,:,wvar)= wsp%p1b(1,:,:,wvar)
-                bc_values(1,:,:,pvar)= wsp%p1b(1,:,:,pvar)
-                bc_values(1,:,:,zvar)= wsp%p1b(1,:,:,zvar)
+                bc_values_AB(1,:,:,tvar)= wsp%p1b(1,:,:,tvar)
+                !Need to check this weighting, but this is probably sensible.
+                bc_values(1,:,:,tvar) = new_ab_factor/deltat*bc_values_AB(1,:,:,tvar)&
+                        + old_ab_factor/deltat * bc_values_AB(2,:,:,tvar)
+                bc_values_AB(2,:,:,tvar) = bc_values_AB(1,:,:,tvar)
+              !  bc_values(1,:,:,wvar)= wsp%p1b(1,:,:,wvar)
+              !  bc_values(1,:,:,pvar)= wsp%p1b(1,:,:,pvar)
+              !  bc_values(1,:,:,zvar)= wsp%p1b(1,:,:,zvar)
         Endif
         If(set_topography_bottom) Then
                 ! 1 is top, 2 is bottom
