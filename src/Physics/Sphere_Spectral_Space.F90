@@ -300,10 +300,27 @@ Contains
         If(set_topography_top) Then
                 ! 1 is top, 2 is bottom
                 bc_values_AB(1,:,:,tvar)= wsp%p1b(1,:,:,tvar)
+                bc_values_AB(1,:,:,wvar)= wsp%p1b(1,:,:,wvar)
+                bc_values_AB(1,:,:,zvar)= wsp%p1b(1,:,:,zvar)
+                bc_values_AB(1,:,:,pvar)= wsp%p1b(1,:,:,pvar)
                 !Need to check this weighting, but this is probably sensible.
                 bc_values(1,:,:,tvar) = new_ab_factor/deltat*bc_values_AB(1,:,:,tvar)&
                         + old_ab_factor/deltat * bc_values_AB(2,:,:,tvar)
                 bc_values_AB(2,:,:,tvar) = bc_values_AB(1,:,:,tvar)
+                
+                bc_values(1,:,:,wvar) = new_ab_factor/deltat*bc_values_AB(1,:,:,wvar)&
+                        + old_ab_factor/deltat * bc_values_AB(2,:,:,wvar)
+                bc_values_AB(2,:,:,wvar) = bc_values_AB(1,:,:,wvar)
+               
+                bc_values(1,:,:,pvar) = new_ab_factor/deltat*bc_values_AB(1,:,:,pvar)&
+                        + old_ab_factor/deltat * bc_values_AB(2,:,:,pvar)
+              
+                bc_values(1,:,:,zvar) = new_ab_factor/deltat*bc_values_AB(1,:,:,zvar)&
+                        + old_ab_factor/deltat * bc_values_AB(2,:,:,zvar)
+                bc_values_AB(2,:,:,tvar) = bc_values_AB(1,:,:,tvar)
+                bc_values_AB(2,:,:,zvar) = bc_values_AB(1,:,:,zvar)
+                bc_values_AB(2,:,:,pvar) = bc_values_AB(1,:,:,pvar)
+                bc_values_AB(2,:,:,wvar) = bc_values_AB(1,:,:,wvar)
               !  bc_values(1,:,:,wvar)= wsp%p1b(1,:,:,wvar)
               !  bc_values(1,:,:,pvar)= wsp%p1b(1,:,:,pvar)
               !  bc_values(1,:,:,zvar)= wsp%p1b(1,:,:,zvar)
