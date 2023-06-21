@@ -42,6 +42,7 @@ Module BoundaryConditions
     Logical :: Set_Topography_Top = .False.
     Logical :: Set_Topography_Bottom = .False.
     Real*8, Allocatable :: H_Boundary_Top(:,:)
+    Real*8, Allocatable :: Topo_Array(:,:)
     Real*8, Allocatable :: H_Boundary_Bottom(:,:)
     Logical :: Fix_chivar_a_Top(1:n_scalar_max)    = .True.
     Logical :: Fix_chivar_a_Bottom(1:n_scalar_max) = .True.
@@ -420,12 +421,11 @@ Contains
         Endif
         Call Store_BC_Mask(bc_values)  ! to checkpointing
         If (set_topography_top) Then
+                Call Read_Topography_File(Trim(my_path)//'boundary',Topo_Array)
                 Allocate(H_Boundary_Top(1:n_phi,my_theta%min:my_theta%max))
-                !Define H_Boundary here
-                !Write function for H in a loop over k and t
                 Do t = my_theta%min,my_theta%max
                     Do k = 1,n_phi
-                        H_Boundary_Top(k,t) = 0.00050*sinphi(k)!(3*cos2theta(t)-1)/2 !F(\phi,\theta)
+                        H_Boundary_Top(k,t) =Topo_Array(t,k) 
                     Enddo
                 Enddo
         Endif
@@ -441,6 +441,43 @@ Contains
         Endif
     End Subroutine Generate_Boundary_Mask
 
+    !!!!!!
+    !Added Subroutine to read in Topography File
+    !Filename is output from define_boundary.py
+    !!!!!!
+    Subroutine Read_Topography_File(filename,x)
+        Character(*), Intent(In) :: filename
+        Real*8, Allocatable, Intent(Out) :: x(:,:)
+        Integer :: read_unit,i,ntheta,nphi
+        Character*120 :: bt_string_test1, bt_string_test2 
+       
+        Open(NewUnit=read_unit,file = filename, status = 'old') 
+        Read(read_unit,*) bt_string_test1, bt_string_test2
+        
+        If (bt_string_test1 == 'ntheta' .and. bt_string_test2 == 'nphi') Then
+            Read(read_unit,*) ntheta,nphi
+        Else
+            Print *, 'formatting for "boundary" incorrect, Exiting'
+            Stop
+        Endif
+        
+       
+        If (ntheta /= n_theta) Then
+                Print *, 'Topography resolution does not match.'
+                Print *, 'Exiting'
+                Stop
+        Else
+            
+            Allocate (x(ntheta,nphi)) 
+            Do i=1, ntheta
+                Read(read_unit,*) x(i,:) 
+            EndDo 
+        EndIf
+    End Subroutine Read_Topography_File
+    !!!!!!
+    !
+    !!!!!!
+    
     Subroutine Set_BC(inval,ellval,emval,eqval,imi,bound_ind)
         Implicit None
         Real*8 , Intent(In) :: inval
