@@ -237,11 +237,11 @@ Contains
     Subroutine Impose_Topography_Top()
         Integer :: t,r,k
         If (my_r%min .eq. 1) Then
-                r = 1
+                r = 2
         !$OMP PARALLEL DO PRIVATE(t,r,k)
             Do t = my_theta%min, my_theta%max
                 Do k =1, n_phi
-                wsp%p3b(k,r,t,tvar) = -H_Boundary_Top(k,t)*wsp%p3a(k,r,t,dtdr)
+                wsp%p3b(k,r-1,t,tvar) = 0.0 - H_Boundary_Top(k,t)*wsp%p3a(k,r,t,dtdr)
                 Enddo
             Enddo
           !  print *, dsin(simulation_time*two_pi)
@@ -489,11 +489,11 @@ Contains
             ! We build  -r^2*rho*h(phi,theta)*dvdr
             ! IDX is shorthand for k,r,t
             If (my_r%min .eq. 1) Then
-                r = 1
+                r = 2
                 Do t = my_theta%min, my_theta%max
                     Do k = 1, n_phi
                         ! Could also say RHSP(IDX,wvar)
-                        RHSP(k,r,t,wvar) = -r_squared(r)*ref%density(r)*h_boundary_top(k,t)*FIELDSP(IDX,dvrdr)
+                        RHSP(k,r-1,t,wvar) = -r_squared(r)*ref%density(r)*h_boundary_top(k,t)*FIELDSP(IDX,dvrdr)
                     Enddo
                 Enddo
             Endif
@@ -630,11 +630,11 @@ Contains
             ! We build  r/sintheta*rho*h(phi,theta)*dvthetadr
             ! IDX is shorthand for k,r,t
             If (my_r%min .eq. 1) Then
-                r = 1
+                r = 2
                 Do t = my_theta%min, my_theta%max
                     Do k = 1, n_phi
                         ! Could also say RHSP(IDX,wvar)
-                        RHSP(k,r,t,pvar) = radius(r)*csctheta(t)*ref%density(r)*h_boundary_top(k,t)*FIELDSP(IDX,dvtdr)
+                        RHSP(k,r-1,t,pvar) = radius(r)*csctheta(t)*ref%density(r)*h_boundary_top(k,t)*FIELDSP(IDX,dvtdr)
                     Enddo
                 Enddo
             Endif
@@ -712,11 +712,11 @@ Contains
             ! We build  r/sintheta*rho*h(phi,theta)*dvphidr
             ! IDX is shorthand for k,r,t
             If (my_r%min .eq. 1) Then
-                r = 1
+                r = 2
                 Do t = my_theta%min, my_theta%max
                     Do k = 1, n_phi
                         ! Could also say RHSP(IDX,wvar)
-                        RHSP(k,r,t,zvar) = radius(r)*csctheta(t)*ref%density(r)*h_boundary_top(k,t)*FIELDSP(IDX,dvpdr)
+                        RHSP(k,r-1,t,zvar) = radius(r)*csctheta(t)*ref%density(r)*h_boundary_top(k,t)*FIELDSP(IDX,dvpdr)
                     Enddo
                 Enddo
             Endif
